@@ -60,7 +60,8 @@
     "mocha-lcov-reporter": "1.2.x",
     "nyc": "^14.1.1",
     "should": "^13.2.3",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "random-bytes": "^1.0.0"
   },
   "typings": "./index.d.ts",
   "nyc": {

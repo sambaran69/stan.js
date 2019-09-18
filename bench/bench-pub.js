@@ -5,6 +5,7 @@
 'use strict';
 
 const STAN = require('../lib/stan.js');
+const randomBytes = require('random-bytes');
 
 const argv = require('minimist')(process.argv.slice(2));
 const cluster_id = argv.c || "test-cluster";
@@ -12,17 +13,22 @@ const client_id = argv.i || "bench-pub";
 const server = argv.s || 'nats://localhost:4222';
 let count = argv.m || 100000;
 count = parseInt(count, 10);
+let messageSize = argv.ms || 128;
 const maxPubAcks = argv.x || 0;
 
 const subject = argv._[0];
-const body = argv._[1] || '';
+let body = argv._[1] || '';
 
 if (!subject) {
     usage();
 }
 
+if (body.length > 0) {
+  messageSize = 0;
+}
+
 function usage() {
-    console.log('bench-pub [-c clusterId] [-i clientId] [-s server] [-m messageCount] <subject> <msg>');
+    console.log('bench-pub [-c clusterId] [-i clientId] [-s server] [-m messageCount] [-ms messageSize] [-x maxPubAcksInflight] <subject> <msg>');
     process.exit();
 }
 
@@ -50,6 +56,9 @@ function send(n) {
         // a chance to process, only pub as many as we can, and then
         // allow the event loop to do something else
         if (sc.pubAckOutstanding < sc.options.maxPubAcksInflight) {
+            if (messageSize > 0) {
+                body = randomBytes.sync(messageSize);
+            }
             sc.publish(subject, body);
             sent++;
             if (sent % 10000 === 0) {
