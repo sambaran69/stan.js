@@ -13,7 +13,8 @@ const client_id = argv.i || "bench-pub";
 const server = argv.s || 'nats://localhost:4222';
 let count = argv.m || 100000;
 count = parseInt(count, 10);
-let messageSize = argv.ms || 128;
+let messageSize = argv.ms || 131072;
+messageSize = parseInt(messageSize, 10);
 const maxPubAcks = argv.x || 0;
 
 const subject = argv._[0];
@@ -23,7 +24,7 @@ if (!subject) {
     usage();
 }
 
-if (body.length > 0) {
+if (argv._[1] && body.length > 0) {
   messageSize = 0;
 }
 
