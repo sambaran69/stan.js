@@ -13,7 +13,7 @@ const client_id = argv.i || "bench-pub";
 const server = argv.s || 'nats://localhost:4222';
 let count = argv.m || 100000;
 count = parseInt(count, 10);
-let messageSize = argv.ms || 131072;
+let messageSize = argv.ms || 128;
 messageSize = parseInt(messageSize, 10);
 const maxPubAcks = argv.x || 0;
 
@@ -58,7 +58,7 @@ function send(n) {
         // allow the event loop to do something else
         if (sc.pubAckOutstanding < sc.options.maxPubAcksInflight) {
             if (messageSize > 0) {
-                body = randomBytes.sync(messageSize);
+                body = randomBytes.sync(messageSize * 1024);
             }
             sc.publish(subject, body);
             sent++;
